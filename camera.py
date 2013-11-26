@@ -20,7 +20,10 @@ def get_path(filename):
 #get_path(camera_execute())
 
 def view_stream():
-	os.system("cvlc v4l2:///dev/video2 --v4l2-width 640 --v4l2-height 480 --v4l2-chroma h264 --sout \'#rtp{sdp=rtsp://8554/}\'")
-	#print command
+	set_device_video = "uv4l --driver raspicam --auto-video_nr --framerate 25"
+	video_stream = "cvlc v4l2:///dev/video0 --v4l2-width 640 --v4l2-height 480 --v4l2-chroma h264 --sout '#rtp{sdp=rtsp://:8554/}'"
+
+	#os.system("uv4l --driver raspicam --auto-video_nr --framerate 25")
+	os.system(video_stream)
 
 view_stream()

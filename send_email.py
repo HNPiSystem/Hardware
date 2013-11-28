@@ -23,7 +23,6 @@ def send_gmail(to, subject, text, attach):
 	mailServer.sendmail(gmail_user, to, msg.as_string())
 	mailServer.close()
 
-if __name__ == "__main__":
 	title = "test mail"
 	to = "darkziny2@gmail.com"
 	gmail_user = "darkziny2@gmail.com"
@@ -31,4 +30,4 @@ if __name__ == "__main__":
 	message = "simple test - send email by gmail"
 	attach_file = "./abc.jpg"
 
-	send_gmail(to, title, message, attach_file)
+#send_gmail(to, title, message, attach_file)

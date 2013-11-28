@@ -17,13 +17,16 @@ def get_path(filename):
 	#print path
 	return path	
 
-#get_path(camera_execute())
-
 def view_stream():
 	set_device_video = "uv4l --driver raspicam --auto-video_nr --framerate 25"
 	video_stream = "cvlc v4l2:///dev/video0 --v4l2-width 640 --v4l2-height 480 --v4l2-chroma h264 --sout '#rtp{sdp=rtsp://:8554/}'"
 
-	#os.system("uv4l --driver raspicam --auto-video_nr --framerate 25")
+	if not os.path.exists("/dev/video0"):
+		print("video device is not found")
+		os.system(set_device_video)
+	else:
+		print("video device is exist")
+	
 	os.system(video_stream)
 
 view_stream()

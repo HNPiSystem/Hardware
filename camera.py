@@ -9,13 +9,8 @@ def camera_execute():
 
 	os.system('raspistill -o ./static/' + filename + '.jpg')
 
-	#print filename
-	return 'http://192.168.0.4:5000/static/' + filename + '.jpg'
-
-def get_path(filename):
-	path =  'http://192.168.0.4:5000/' + filename + '.jpg'
-	#print path
-	return path	
+	import get_ip
+	return 'http://' + get_ip.get_ip_address('eth0') + ':5000/static/' + filename + '.jpg'
 
 def view_stream():
 	set_device_video = "uv4l --driver raspicam --auto-video_nr --framerate 25"
@@ -28,5 +23,3 @@ def view_stream():
 		print("video device is exist")
 	
 	os.system(video_stream)
-
-view_stream()

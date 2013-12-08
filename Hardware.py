@@ -1,45 +1,40 @@
 import camera
 import pir_sensor
 import send_email
+from multiprocessing import Process, Pipe
+import module_check
 
 class HardwareManager():
 
-	# flag-> -1 : no use / 1 : use
-	pir_execute_flag = -1
-	camera_execute_flag = -1
 
-	image_path = ''
+	camera_execute_flag = -1
+	pir_execute_flag = -1
+
+	
+	# connected module check flag
+	# flag -> -1 : not connected / 1 : connected
+	picamera = -1
+	thermo_sensor = -1
+	light_sensor = -1	
+
 
 	# initialize
 	def __init__(self):
 
-		# use global variables
-		global pir_execute_flag
-		global camera_execute_flag
-		# for testing ################
-		print("in init")
-		##############################
+		# connected module check
+		self.picamera = module_check.check_camera()
+		self.thermo_sensor = module_check.check_thermo_sensor()
+		self.light_sensor = module_check.check_light_sensor()
 
-	# get flag value #####################
-	def get_camera_flag(self):
-		return camera_execute_flag
-	
-	def get_pir_flag(self):
-		return pir_execute_flag
-	######################################
 
-	# get imagefile_path #################
-	def get_image_path(self):
-		return image_path
-	######################################
-
-	# return to init flag ################
-	def return_camera_flag(self):
-		self.camera_execute_flag = -1
-	
-	def return_pir_flag(self):
-		self.pir_execute_flag = -1
-	######################################
+	# send connected module info to Server ###
+	def send_to_server_camera(self):
+		return self.picamera
+	def send_to_server_thermo(self):
+		return self.thermo_sensor
+	def send_to_server_light(self):
+		return self.light_sensor
+	##########################################
 
 
 
@@ -73,6 +68,7 @@ class HardwareManager():
 		##############################
 
 
+
 	# ask for streaming module,
 	# execute streaming module after status check
 	def ask_streaming(self):
@@ -103,11 +99,6 @@ class HardwareManager():
 		print("out ask_streaming")
 		################################
 	
-
-	# quit to streaming service module
-	#def ask_exit_streaming(self):
-	#	print("testing...")
-	#	self.camera_execute_flag = -1
 
 		
 	# ask for pir_sensor module,

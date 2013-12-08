@@ -1,16 +1,11 @@
 import camera
 import pir_sensor
-import send_email
-from multiprocessing import Process, Pipe
 import module_check
+import subprocess
+import os
 
 class HardwareManager():
 
-
-	camera_execute_flag = -1
-	pir_execute_flag = -1
-
-	
 	# connected module check flag
 	# flag -> -1 : not connected / 1 : connected
 	picamera = -1
@@ -22,111 +17,133 @@ class HardwareManager():
 	def __init__(self):
 
 		# connected module check
-		self.picamera = module_check.check_camera()
-		self.thermo_sensor = module_check.check_thermo_sensor()
+		#self.picamera = module_check.check_camera()
+		#self.thermo_sensor = module_check.check_thermo_sensor()
 		self.light_sensor = module_check.check_light_sensor()
 
 
-	# send connected module info to Server ###
-	def send_to_server_camera(self):
+	# return connected module info ##
+	def status_of_cctv(self):
 		return self.picamera
-	def send_to_server_thermo(self):
+	def status_of_therm(self):
 		return self.thermo_sensor
-	def send_to_server_light(self):
+	def status_of_light(self):
 		return self.light_sensor
-	##########################################
+	#################################
 
+
+	# send all connected modules info ####
+	def get_status_of_devices(self):
+		devices = []
+		if self.status_of_cctv() == 1:
+			devices.append('cctv_module')
+		if self.status_of_therm() == 1:
+			devices.append('therm_module')
+		if self.status_of_light() == 1:
+			devices.append('light_module')
+		return devices
 
 
 	# ask for camera module,
 	# execute camera module after status check
 	def ask_camera(self):
+		try:
+			# for testing ##################
+			print("in ask_camera")
+			################################
 
-		# for testing ##################
-		print("in ask_camera")
-		print("camera flag")
-		print(self.camera_execute_flag)
-		################################
-
-		# if camera module is not used
-		# take picture and image's path return to Server
-		if self.camera_execute_flag == -1:
-			self.camera_execute_flag = 1
+			# take picture and image's path return to Server
 			self.image_path = camera.camera_execute()
-			self.camera_execute_flag = -1
 			print(self.image_path)
 			return self.image_path
-	
-		# if camera module is used
-		# send error message to Server and return error code -1
-		else:
-			print("sorry, camera module is used")
+
+		except:
+			print("error - ask_camera!")
 			return -1
 
-		# for testing ################
-		print("out ask_camera")
-		##############################
+		# for testing #################
+                print("out ask_pir_sensor")
+                ###############################
 
 
 
 	# ask for streaming module,
 	# execute streaming module after status check
 	def ask_streaming(self):
+		try:
+			# for testing ##################
+			print("in ask_streaming")
+			#################################
 
-		# for testing ##################
-		print("in ask_streaming")
-		print("camera flag")
-		print(self.camera_execute_flag)
-		#################################
-
-
-		# if camera module is not used
-		# execute streaming service
-		if self.camera_execute_flag == -1:
-			self.camera_execute_flag = 1
-			print(self.camera_execute_flag)
+			# execute streaming service
 			camera.view_stream()
-	
-		# if camera module is used
-		# send error message to Server and return error code -2
-		else:
-			print("sorry, camera module is used")
-			return -2
-		print("exit to streaming")
-		print(self.camera_execute_flag)
+			print("quit to streaming")
 
-		# for testing ##################
-		print("out ask_streaming")
-		################################
-	
+		except:
+			print("error - ask_streaming!")
+			return -1
+
+		# for testing #################
+                print("out ask_pir_sensor")
+                ###############################
+
 
 		
 	# ask for pir_sensor module,
 	# execute pir_sensor module after status check
 	def ask_pir_sensor(self):
+		try:
+			# for testing ###################
+			print("in ask_pir_sensor")
+			#################################
 
-		# for testing ###################
-		print("in ask_pir_sensor")
-		print("pir_sensor flag")
-		print(self.pir_execute_flag)
-		print("camera_sensor flag")
-		print(self.camera_execute_flag)
-		#################################
-
-		# if camera module is used
-		# send error message to Server and return error code -3
-		if self.camera_execute_flag == 1:
-			print("camera used for streaming service. You don't executed pir_sensor!")
-			return -3
-	
-	
-		# if camera moudl is not used
-		# execute pir_sensor
-		else:
-			self.pir_execute_flag = 1
+			# execute pir_sensor
 			pir_sensor.sensoring()
-			self.pir_execute_flag = -1
+			print("quit to pir_sensoring")
 
+		except:
+			print("error - in ask_pir_sensor!")
+			return -1
+		
 		# for testing #################
-		print("out ask_pir_sensor")
-		###############################
+                print("out ask_pir_sensor")
+                ###############################
+
+
+
+        # ask for thermo_sensor module,
+        # execute thermo_sensor module after status check
+        def ask_thermo_sensor(self):
+
+		text1 = "sudo modprobe w1-gpio"
+		text2 = "sudo modprobe w1-therm"
+		text3 = "cat /sys/bus/w1/devices/10-00080230a78c/w1_slave | grep -E -o \".$-o \".{0,0}t=.{0,5}\" | cut -c 3-"
+
+		try:
+			# for testing ###################
+			print("in ask_thermo_sensor")
+                	#################################
+
+		        # execute thermo_sensor
+			t1 = os.system(text1)
+			t2 = os.system(text2)
+
+			pipe = subprocess.Popen(text3, shell=True, stdout=subprocess.PIPE)
+			pipe.wait()
+
+			result = pipe.stdout.read()
+			result = result[0 : len(result)-2]
+
+			print "1"
+			print result
+			print "2"
+
+			return result
+
+		except:
+			print("error - in ask_thermo_sensor!")
+			return 0
+		
+		# for testing #################
+                print("out ask_thermo_sensor")
+                ###############################

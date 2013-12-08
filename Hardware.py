@@ -1,6 +1,7 @@
 import camera
 import pir_sensor
 import module_check
+import light_sensor
 import subprocess
 import os
 
@@ -17,8 +18,8 @@ class HardwareManager():
 	def __init__(self):
 
 		# connected module check
-		#self.picamera = module_check.check_camera()
-		#self.thermo_sensor = module_check.check_thermo_sensor()
+		self.picamera = module_check.check_camera()
+		self.thermo_sensor = module_check.check_thermo_sensor()
 		self.light_sensor = module_check.check_light_sensor()
 
 
@@ -117,7 +118,7 @@ class HardwareManager():
 
 		text1 = "sudo modprobe w1-gpio"
 		text2 = "sudo modprobe w1-therm"
-		text3 = "cat /sys/bus/w1/devices/10-00080230a78c/w1_slave | grep -E -o \".$-o \".{0,0}t=.{0,5}\" | cut -c 3-"
+		text3 = "cat /sys/bus/w1/devices/10-00080230a78c/w1_slave | grep -E -o \".{0,0}t=.{0,5}\" | cut -c 3-"
 
 		try:
 			# for testing ###################
@@ -134,10 +135,6 @@ class HardwareManager():
 			result = pipe.stdout.read()
 			result = result[0 : len(result)-2]
 
-			print "1"
-			print result
-			print "2"
-
 			return result
 
 		except:
@@ -146,4 +143,26 @@ class HardwareManager():
 		
 		# for testing #################
                 print("out ask_thermo_sensor")
+                ###############################
+
+
+
+        # ask for light_sensor module,
+        # execute light_sensor module after status check
+        def ask_light_sensor(self):
+                try:
+                        # for testing ###################
+                        print("in ask_light__sensor")
+                        #################################
+
+                        # execute light_sensor
+			L = light_sensor	
+			
+			return L.light_sensoring()
+                except:
+                        print("error - in ask_pir_sensor!")
+                        return -1
+
+                # for testing #################
+                print("out ask_light_sensor")
                 ###############################

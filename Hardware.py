@@ -168,7 +168,7 @@ class HardwareManager():
 
 		except:
 			print("error - in ask_thermo_sensor!")
-			return 0
+			return -1
 		
 		# for testing #################
                 print("out ask_thermo_sensor")

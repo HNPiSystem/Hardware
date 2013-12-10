@@ -7,9 +7,8 @@ camera_flag = -1
 thermo_sensor_flag = -1
 light_sensor_flag = -1
 
-GPIO.cleanup()
-
 def check_pir_sensor():
+	GPIO.cleanup()
 	
 	global pir_sensor_flag
 	print "PIR module check test!"
@@ -69,6 +68,7 @@ def check_camera():
 		return 0
 
 def check_thermo_sensor():
+	GPIO.cleanup()
 	global thermo_sensor_flag
 	print "THERMOMETER module check test!"
 
@@ -104,7 +104,7 @@ def check_thermo_sensor():
 
 
 def check_light_sensor():
-
+	GPIO.cleanup()
 	global light_sensor_flag
 	print "LIGHTSENSOR module check test!"
 
@@ -114,7 +114,7 @@ def check_light_sensor():
 	GPIO.setup(18, GPIO.IN)
 	
 	try:
-		for i in range(0, 100, 1):
+		for i in range(0, 500, 1):
 			if (GPIO.input(18) == 1):
 				print "Light_sensor is connected"
 				light_sensor_flag = 1
@@ -122,7 +122,10 @@ def check_light_sensor():
 			elif light_sensor_flag == 1:
 				break
 			else:
-				print "Light_sensor module is not connected"
+				continue
+
+		if light_sensor_flag == -1:
+			print "Light_sensor module is not connected"
 	                
 		print "----------------------------"
 		GPIO.cleanup()
